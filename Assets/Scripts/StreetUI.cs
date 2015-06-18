@@ -6,6 +6,7 @@ public class StreetUI : MonoBehaviour {
 
 	private float m_lastTouchX = 0;
 	public float m_accelSlide = 0.5f;
+	public Transform m_cameraTF = null;
 
 	// Use this for initialization
 	void Start () 
@@ -25,14 +26,13 @@ public class StreetUI : MonoBehaviour {
 
 	public void OnDrag()
 	{
+		if (m_cameraTF == null) return;
+
 		float newTouchX = Input.mousePosition.x;
 		float slideDelta = newTouchX - m_lastTouchX;
 		m_lastTouchX = newTouchX;
 
-		GameObject cameraGO = GameObject.Find("Street/Camera");
-		cameraGO.transform.position -= Vector3.right * slideDelta;
-
-		Debug.Log(slideDelta);
+		m_cameraTF.position -= Vector3.right * (slideDelta * m_accelSlide);
 	}
 
 }
