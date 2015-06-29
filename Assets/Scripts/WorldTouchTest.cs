@@ -13,7 +13,7 @@ public class WorldTouchTest : MonoBehaviour {
 	
 	}
 
-	public void OnClick()
+	public void OnHit()
 	{
 		Debug.Log("Test! it's clicked1!");
 	}
