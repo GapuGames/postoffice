@@ -8,6 +8,11 @@ public class StreetUI : MonoBehaviour
 	public Camera m_mainCam = null;
 
 	//! public method
+	public void Awake()
+	{
+		m_worldLayer |= (1 << LayerMask.NameToLayer("World"));
+	}
+
 	public void OnBeginDrag()
 	{
 		m_lastTouchX = Input.mousePosition.x;
@@ -20,7 +25,7 @@ public class StreetUI : MonoBehaviour
 		float newTouchX = Input.mousePosition.x;
 		float slideDelta = newTouchX - m_lastTouchX;
 		m_lastTouchX = newTouchX;
-		
+
 		m_mainCam.transform.position -= Vector3.right * (slideDelta * m_accelSlide);
 	}
 	
@@ -29,7 +34,7 @@ public class StreetUI : MonoBehaviour
 		if (m_mainCam == null) return;
 		
 		Ray          ray     = m_mainCam.ScreenPointToRay(Input.mousePosition);
-		RaycastHit[] results = Physics.RaycastAll(ray);
+		RaycastHit[] results = Physics.RaycastAll( ray, Mathf.Infinity, m_worldLayer );
 
 		if (results.Length == 0) return;
 
@@ -47,13 +52,15 @@ public class StreetUI : MonoBehaviour
 			}
 		}
 
-		closestHit.collider.SendMessage("OnHit");
+		closestHit.collider.SendMessage(m_msgName);
 	}
 
 	//! private method
 
 	//! private member
 	private float m_lastTouchX = 0;
+	private int    m_worldLayer = 0;
+	private string m_msgName   = "OnHit";
 
 
 }

@@ -15,6 +15,6 @@ public class WorldTouchTest : MonoBehaviour {
 
 	public void OnHit()
 	{
-		Debug.Log("Test! it's clicked1!");
+		Debug.Log(gameObject.name + "! it's clicked1!");
 	}
 }
