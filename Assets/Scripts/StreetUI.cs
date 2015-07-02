@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Events;	
 using System.Collections;
 
 public class StreetUI : MonoBehaviour
@@ -13,12 +14,12 @@ public class StreetUI : MonoBehaviour
 		m_worldLayer |= (1 << LayerMask.NameToLayer("World"));
 	}
 
-	public void OnBeginDrag()
+	public void OnBeginDragBackground()
 	{
 		m_lastTouchX = Input.mousePosition.x;
 	}
 	
-	public void OnDrag()
+	public void OnDragBackground()
 	{
 		if (m_mainCam == null) return;
 		
@@ -29,7 +30,7 @@ public class StreetUI : MonoBehaviour
 		m_mainCam.transform.position -= Vector3.right * (slideDelta * m_accelSlide);
 	}
 	
-	public void OnClick()
+	public void OnClickBackground()
 	{
 		if (m_mainCam == null) return;
 		
@@ -53,6 +54,15 @@ public class StreetUI : MonoBehaviour
 		}
 
 		closestHit.collider.SendMessage(m_msgName);
+	}
+
+	public void OnTestBtn()
+	{
+		UnityAction openNotice = null;
+		UnityAction openChoice = null;
+		openNotice = ()=> { GameUI.Notice("title test", "desc test", openChoice); };
+		openChoice = ()=> { GameUI.Choice("title test", "desc test", openNotice); };
+		openNotice();
 	}
 
 	//! private method
