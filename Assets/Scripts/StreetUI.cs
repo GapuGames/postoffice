@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.Events;	
 using System.Collections;
 
@@ -33,7 +33,7 @@ public class StreetUI : MonoBehaviour
 	public void OnClickBackground()
 	{
 		if (m_mainCam == null) return;
-		
+		Debug.Log("OnClickBackground");
 		Ray          ray     = m_mainCam.ScreenPointToRay(Input.mousePosition);
 		RaycastHit[] results = Physics.RaycastAll( ray, Mathf.Infinity, m_worldLayer );
 
@@ -60,17 +60,18 @@ public class StreetUI : MonoBehaviour
 	{
 		UnityAction openNotice = null;
 		UnityAction openChoice = null;
-		openNotice = ()=> { GameUI.Notice("title test", "desc test", openChoice); };
-		openChoice = ()=> { GameUI.Choice("title test", "desc test", openNotice); };
+		openNotice = ()=> { GameUI.Notice("notice popup", "push a button", openChoice); };
+		openChoice = ()=> { GameUI.Choice("choice test", "select a button", openNotice); };
 		openNotice();
 	}
 
 	//! private method
 
 	//! private member
-	private float m_lastTouchX = 0;
+	private float m_lastTouchX  = 0;
 	private int    m_worldLayer = 0;
-	private string m_msgName   = "OnHit";
+	private string m_msgName    = "OnHit";
+	private bool m_wasItClick   = true;
 
 
 }
