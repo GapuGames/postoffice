@@ -71,7 +71,6 @@ public class StreetUI : MonoBehaviour
 	private float m_lastTouchX  = 0;
 	private int    m_worldLayer = 0;
 	private string m_msgName    = "OnHit";
-	private bool m_wasItClick   = true;
 
 
 }
