@@ -7,6 +7,11 @@ public class StreetUI : MonoBehaviour
 	//! public members
 	public float  m_accelSlide = 0.5f;
 	public Camera m_mainCam = null;
+	
+	//! private members
+	private float m_lastTouchX  = 0;
+	private int    m_worldLayer = 0;
+	private string m_msgName    = "OnHit";
 
 	//! public method
 	public void Awake()
@@ -34,6 +39,7 @@ public class StreetUI : MonoBehaviour
 	{
 		if (m_mainCam == null) return;
 		Debug.Log("OnClickBackground");
+
 		Ray          ray     = m_mainCam.ScreenPointToRay(Input.mousePosition);
 		RaycastHit[] results = Physics.RaycastAll( ray, Mathf.Infinity, m_worldLayer );
 
@@ -56,21 +62,21 @@ public class StreetUI : MonoBehaviour
 		closestHit.collider.SendMessage(m_msgName);
 	}
 
-	public void OnTestBtn()
+	public void OnEditBtn()
 	{
-		UnityAction openNotice = null;
-		UnityAction openChoice = null;
-		openNotice = ()=> { GameUI.Notice("notice popup", "push a button", openChoice); };
-		openChoice = ()=> { GameUI.Choice("choice test", "select a button", openNotice); };
-		openNotice();
+		Building building = GameObject.Find("World/Building").GetComponent<Building>();
+		GameObject editUIPrefab = LoadPrefab("Prefab/Unclassified/BuildingEditUI");
+		GameObject editUIGO = GameObject.Instantiate(editUIPrefab) as GameObject;
+		BuildingEditUI editUI = editUIGO.GetComponent<BuildingEditUI>();
+		editUI.Init(m_mainCam, building, GameObject.Find("World"));
+	}
+	
+	private static GameObject LoadPrefab(string path)
+	{
+		return Resources.Load(path) as GameObject;
 	}
 
 	//! private method
-
-	//! private member
-	private float m_lastTouchX  = 0;
-	private int    m_worldLayer = 0;
-	private string m_msgName    = "OnHit";
 
 
 }
