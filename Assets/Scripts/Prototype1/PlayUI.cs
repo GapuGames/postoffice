@@ -1,47 +1,40 @@
 using UnityEngine;
-using UnityEngine.Events;	
+using UnityEngine.Events;
+using UnityEngine.EventSystems;	
 using System.Collections;
 
-public class StreetUI : MonoBehaviour
+public class PlayUI : MonoBehaviour
 {
 	//! public members
-	public float  m_accelSlide = 0.5f;
-	public Camera m_mainCam = null;
+	public LayerMask m_hitMask;
+	public string    m_msgName  = "OnHit";
+	public Camera    m_mainCam  = null;
 	
 	//! private members
-	private float m_lastTouchX  = 0;
-	private int    m_worldLayer = 0;
-	private string m_msgName    = "OnHit";
 
 	//! public method
 	public void Awake()
 	{
-		m_worldLayer |= (1 << LayerMask.NameToLayer("World"));
 	}
 
 	public void OnBeginDragBackground()
 	{
-		m_lastTouchX = Input.mousePosition.x;
 	}
 	
 	public void OnDragBackground()
 	{
 		if (m_mainCam == null) return;
-		
-		float newTouchX = Input.mousePosition.x;
-		float slideDelta = newTouchX - m_lastTouchX;
-		m_lastTouchX = newTouchX;
-
-		m_mainCam.transform.position -= Vector3.right * (slideDelta * m_accelSlide);
 	}
 	
-	public void OnClickBackground()
+	public void OnClickBackground(BaseEventData bed)
 	{
 		if (m_mainCam == null) return;
-		Debug.Log("OnClickBackground");
+
+		PointerEventData ped = bed as PointerEventData;
+		if (ped.dragging) return;
 
 		Ray          ray     = m_mainCam.ScreenPointToRay(Input.mousePosition);
-		RaycastHit[] results = Physics.RaycastAll( ray, Mathf.Infinity, m_worldLayer );
+		RaycastHit[] results = Physics.RaycastAll( ray, Mathf.Infinity, m_hitMask );
 
 		if (results.Length == 0) return;
 
@@ -61,7 +54,7 @@ public class StreetUI : MonoBehaviour
 
 		closestHit.collider.SendMessage(m_msgName);
 	}
-
+	
 	private static GameObject LoadPrefab(string path)
 	{
 		return Resources.Load(path) as GameObject;
