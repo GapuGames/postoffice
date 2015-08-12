@@ -21,6 +21,13 @@ public class Character : MonoBehaviour
 		m_ctrler.m_dragAct  = Move;
 		m_ctrler.m_clickAct = Click;
 	}
+	
+	private void FixedUpdate()
+	{
+		Vector3 pos = transform.position;
+		pos.z = pos.y;
+		transform.position = pos;
+	}
 
 	public void BeginMove()
 	{
