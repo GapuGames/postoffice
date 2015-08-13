@@ -1,31 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EnemyMob : MonoBehaviour
+public class EnemyMob : Character
 {
-	public float      m_speed = 0.5f;
-	private Rigidbody m_rigid = null;
-
-	private void Start()
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// public methods
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public void Redirect()
 	{
-		m_rigid = GetComponent<Rigidbody>();
-		Turn();
+		m_character.Move(Random.value * Mathf.PI * 2);
+		CancelInvoke("Redirect");
+		Invoke("Redirect", Random.Range(1.0f, 3.0f));
+	}
+
+	public void GetDamaged(float amount)
+	{
 	}
 	
-	private void FixedUpdate()
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// private field
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private Character m_character = null;
+	private void Start()
 	{
-		Vector3 pos = transform.position;
-		pos.z = pos.y;
-		transform.position = pos;
+		m_character = GetComponent<Character>();
+		Redirect();
 	}
 
-	private void Turn()
-	{
-		float radian = Random.value * Mathf.PI * 2;
-		Vector2 vec2 = Vector2.zero;
-		vec2.x = Mathf.Cos(radian);
-		vec2.y = Mathf.Sin(radian);
-		m_rigid.velocity = vec2 * m_speed;
-		Invoke("Turn", Random.Range(1.0f, 3.0f));
-	}
 }

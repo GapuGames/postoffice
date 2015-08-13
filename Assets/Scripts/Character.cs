@@ -3,50 +3,84 @@ using System.Collections;
 
 public class Character : MonoBehaviour
 {
-	public bool       m_moving = false;
-	public float      m_speed  = 2.0f;
-	public float      m_degree = 0;
-	public Controller m_ctrler = null;
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// public field
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	public void Idle()
+	{
+		ChangeState(State.Idle);
+	}
 
-	private Rigidbody m_rigid = null;
-	private Animation m_anim  = null;
+	public void Move(float radian)
+	{
+		if (ChangeState(State.Move))
+		{
+			Vector2 vec2 = Vector2.zero;
+			vec2.x = Mathf.Cos(radian);
+			vec2.y = Mathf.Sin(radian);
+			m_rigid.velocity = vec2 * m_speed;
+		}
+	}
+	
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	/// private field
+	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+	private State      m_state  = State.Idle;
+	private float      m_speed  = 2.0f;
+	private float      m_damage = 0.0f;
+	private Rigidbody  m_rigid  = null;
+	//private enum MoveType { None, MoveTo, MoveBy, }
+	//private MoveType m_moveType = None;
+	
+	private enum State
+	{
+		Idle,
+		Move,
+		Attack,
+		Defence,
+	}
 
-	private void Start()
+	private void Awake()
 	{
 		m_rigid = GetComponent<Rigidbody>();
-		m_anim  = GetComponent<Animation>();
+	}
 
-		m_ctrler.m_beginAct = BeginMove;
-		m_ctrler.m_endAct   = EndMove;
-		m_ctrler.m_dragAct  = Move;
-		m_ctrler.m_clickAct = Click;
+	private bool ChangeState(State state)
+	{
+		bool ret = TransitState(m_state, state);
+		if (ret) m_state = state;
+		return ret;
 	}
 	
 	private void FixedUpdate()
 	{
-		Vector3 pos = transform.position;
-		pos.z = pos.y;
-		transform.position = pos;
+		UpdateState(m_state);
 	}
 
-	public void BeginMove()
+	private bool TransitState(State oldState, State newState)
 	{
-	}
-	
-	public void EndMove()
-	{
-		m_rigid.velocity = Vector2.zero;
-	}
-	
-	public void Move(float radian)
-	{
-		Vector2 vec2 = new Vector2(Mathf.Cos(radian), Mathf.Sin(radian));
-		m_rigid.velocity = vec2 * m_speed;
-	}
-	
-	public void Click()
-	{
-		m_anim.Play("Test", PlayMode.StopAll);
+		switch (oldState)
+		{
+		case State.Move:
+		{
+			m_rigid.velocity = Vector2.zero;
+		}
+			break;
+		}
+		return true;
 	}
 
+	private void UpdateState(State state)
+	{
+		switch (state)
+		{
+		case State.Move:
+		{
+			Vector3 pos = transform.position;
+			pos.z = pos.y;
+			transform.position = pos;
+		} 
+			break;
+		}
+	}
 }
