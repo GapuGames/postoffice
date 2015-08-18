@@ -25,10 +25,10 @@ public class Character : MonoBehaviour
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// private field
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	private State      m_state  = State.Idle;
-	private float      m_speed  = 2.0f;
-	private float      m_damage = 0.0f;
-	private Rigidbody  m_rigid  = null;
+	private State       m_state  = State.Idle;
+	public  float       m_speed  = 2.0f;
+	private float       m_damage = 0.0f;
+	private Rigidbody2D m_rigid  = null;
 	//private enum MoveType { None, MoveTo, MoveBy, }
 	//private MoveType m_moveType = None;
 	
@@ -42,7 +42,7 @@ public class Character : MonoBehaviour
 
 	private void Awake()
 	{
-		m_rigid = GetComponent<Rigidbody>();
+		m_rigid = GetComponent<Rigidbody2D>();
 	}
 
 	private bool ChangeState(State state)
