@@ -1,86 +1,70 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Character : MonoBehaviour
 {
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	/// public field
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public void Idle()
+	public void Stop()
 	{
-		ChangeState(State.Idle);
+		m_rigid.velocity = Vector2.zero;
 	}
 
 	public void Move(float radian)
 	{
-		if (ChangeState(State.Move))
-		{
-			Vector2 vec2 = Vector2.zero;
-			vec2.x = Mathf.Cos(radian);
-			vec2.y = Mathf.Sin(radian);
-			m_rigid.velocity = vec2 * m_speed;
-		}
+		Vector2 vec2 = Vector2.zero;
+		vec2.x = Mathf.Cos(radian);
+		vec2.y = Mathf.Sin(radian);
+		m_rigid.velocity = vec2 * m_speed;
 	}
-	
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public uint ApplyDamage(uint amount)
+	{
+		m_nowHP = (amount >= m_nowHP)? 0:(m_nowHP - amount);
+		return m_nowHP;
+	}
+
+	public uint ApplyHeal(uint amount)
+	{
+		m_nowHP = (m_maxHP <= m_nowHP)? m_maxHP:(m_nowHP + amount);
+		return m_nowHP;
+	}
+
+	public uint HearthPoint
+	{
+		get { return m_nowHP; }
+	}
+
+	public float HearthRate
+	{
+		get { return (float)m_nowHP/(float)m_maxHP; }
+	}
+
 	/// private field
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	private State       m_state  = State.Idle;
-	public  float       m_speed  = 2.0f;
-	private float       m_damage = 0.0f;
-	private Rigidbody2D m_rigid  = null;
-	//private enum MoveType { None, MoveTo, MoveBy, }
-	//private MoveType m_moveType = None;
 	
-	private enum State
-	{
-		Idle,
-		Move,
-		Attack,
-		Defence,
-	}
+	[SerializeField] private float m_speed  = 2.0f;
+	[SerializeField] private uint  m_maxHP  = 0;
+	[SerializeField] private Image m_hpUI   = null;
+	private uint        m_nowHP  = 0;
+	private Rigidbody2D m_rigid  = null;
 
 	private void Awake()
 	{
 		m_rigid = GetComponent<Rigidbody2D>();
-	}
-
-	private bool ChangeState(State state)
-	{
-		bool ret = TransitState(m_state, state);
-		if (ret) m_state = state;
-		return ret;
+		m_nowHP = m_maxHP;
 	}
 	
 	private void FixedUpdate()
 	{
-		UpdateState(m_state);
-	}
+		Vector3 position = transform.position;
+		Vector3 scale    = transform.localScale;
+		position.z = position.y;
+		if (m_rigid.velocity.x != 0.0f) scale.x = (m_rigid.velocity.x < 0)? -1 : +1;
+		transform.position   = position;
+		transform.localScale = scale;
 
-	private bool TransitState(State oldState, State newState)
-	{
-		switch (oldState)
-		{
-		case State.Move:
-		{
-			m_rigid.velocity = Vector2.zero;
-		}
-			break;
-		}
-		return true;
-	}
-
-	private void UpdateState(State state)
-	{
-		switch (state)
-		{
-		case State.Move:
-		{
-			Vector3 pos = transform.position;
-			pos.z = pos.y;
-			transform.position = pos;
-		} 
-			break;
-		}
+		if (m_hpUI.fillAmount != HearthRate) m_hpUI.fillAmount = HearthRate;
 	}
 }
