@@ -5,12 +5,7 @@ public class UserMob : MonoBehaviour
 {
 	[SerializeField] private Controller m_controller = null;
 	[SerializeField] private Weapon     m_weapon     = null;
-	private Character  m_character  = null;
-
-	private void Awake()
-	{
-		m_character = GetComponent<Character>();
-	}
+	[SerializeField] private Character  m_character  = null;
 
 	private void Start ()
 	{

@@ -14,7 +14,7 @@ public class EnemyMob : MonoBehaviour
 
 	/// private field
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	private Character m_character = null;
+	[SerializeField] private Character m_character = null;
 	private State     m_state = State.Idle;
 	private enum State
 	{
@@ -22,11 +22,6 @@ public class EnemyMob : MonoBehaviour
 		Runaway,
 		Damaged,
 		Died,
-	}
-
-	private void Start()
-	{
-		m_character = GetComponent<Character>();
 	}
 
 	private void TransitState(EnemyMob.State state)
@@ -60,7 +55,7 @@ public class EnemyMob : MonoBehaviour
 
 	private void OnHitBoxRadar(GameObject go)
 	{
-		UserMob userMob = go.GetComponent<UserMob>();
+		UserMob userMob = go.GetComponentInChildren<UserMob>();
 		if (userMob != null) TransitState(State.Runaway);
 	}
 }
