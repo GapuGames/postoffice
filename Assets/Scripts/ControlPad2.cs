@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 
-public class Controller : MonoBehaviour
+public class ControlPad2 : MonoBehaviour
 {
 	[SerializeField]
 	private Image m_pad;
