@@ -4,7 +4,7 @@ using System.Collections;
 public class Weapon : MonoBehaviour
 {
 	[SerializeField] private uint m_damage = 10;
-	public void Attack()
+	public void Use()
 	{
 		gameObject.SetActive(true);
 		Invoke("Deactive", 0.1f);
