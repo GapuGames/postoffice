@@ -5,6 +5,15 @@ using System.Collections;
 [ExecuteInEditMode]
 public class SortingNode : MonoBehaviour
 {
+	void Start()
+	{
+		if (Application.isPlaying) Component.Destroy(this);
+		else foreach (Transform tf in transform)
+		{
+			Resort(tf);
+		}
+	}
+
 	// Update is called once per frame
 	void Update ()
 	{
