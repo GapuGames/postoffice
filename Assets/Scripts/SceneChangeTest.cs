@@ -5,7 +5,8 @@ using System.Collections;
 public class SceneChangeTest : MonoBehaviour
 {
 	public Text m_text = null;
-	public void OnButtonClicked()
+
+	private void Start()
 	{
 		StartCoroutine(LoadField());
 	}
