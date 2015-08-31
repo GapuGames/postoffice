@@ -11,7 +11,7 @@ public class UserMob : MonoBehaviour
 	private void Start ()
 	{
 		m_weapon.Deactive();
-		m_controlPad.SetControlCallback(OnMoving, OnAction);
+		m_controlPad.SetControlCallback(OnMoving, TurnOnAction, TurnOffAction);
 	}
 
 	private void OnMoving(Vector2 direction, float amount)
@@ -20,9 +20,19 @@ public class UserMob : MonoBehaviour
 		else m_character.Stop();
 	}
 
-	private void OnAction()
+	private void AutoAct()
 	{
 		m_weapon.Use();
+	}
+
+	private void TurnOnAction()
+	{
+		InvokeRepeating("AutoAct", 0, 0.3f);
+	}
+	
+	private void TurnOffAction()
+	{
+		CancelInvoke("AutoAct");
 	}
 
 	private void BeginDrag()

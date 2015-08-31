@@ -6,17 +6,24 @@ public class ControlPad : MonoBehaviour
 {
 
 	[SerializeField] 
-	private ControlBall m_ctrlBall       = null;
-	private UnityAction m_actionCallback = null;
+	private MovePanel   m_movePanel  = null;
+	private UnityAction m_actionDown = null;
+	private UnityAction m_actionUp   = null;
 
-	public void OnActionClicked()
+	public void OnActionDown()
 	{
-		if (m_actionCallback != null) m_actionCallback();
+		if (m_actionDown != null) m_actionDown();
+	}
+	
+	public void OnActionUp()
+	{
+		if (m_actionUp != null) m_actionUp();
 	}
 
-	public void SetControlCallback(UnityAction<Vector2, float> movingCallback, UnityAction actionCallback)
+	public void SetControlCallback(UnityAction<Vector2, float> movingCallback, UnityAction actionDown, UnityAction actionUp)
 	{
-		if (m_ctrlBall != null) m_ctrlBall.m_movingCallback = movingCallback;
-		m_actionCallback = actionCallback;
+		if (m_movePanel != null) m_movePanel.m_movingCallback = movingCallback;
+		m_actionDown = actionDown;
+		m_actionUp   = actionUp;
 	}
 }
