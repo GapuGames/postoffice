@@ -1,20 +1,23 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using UnityEngine.UI;
 using System.Collections;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 [ExecuteInEditMode]
 public class LayerAssigner : MonoBehaviour
 {
+#if UNITY_EDITOR
 	public string m_layer;
 	public int    m_order = 0;
 	public bool   m_apply = false;
+
 	void Start ()
 	{
-		if (Application.isPlaying) Component.Destroy(this);
-		else Apply();
+		Apply();
 	}
-
+	
 	void Update()
 	{
 		if (m_apply)
@@ -23,7 +26,7 @@ public class LayerAssigner : MonoBehaviour
 			Apply();
 		}
 	}
-
+	
 	void Apply()
 	{
 		SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>();
@@ -33,4 +36,10 @@ public class LayerAssigner : MonoBehaviour
 			sprite.sortingOrder = m_order;
 		}
 	}
+#else 
+	void Start ()
+	{
+		Component.Destroy(this);
+	}
+#endif
 }

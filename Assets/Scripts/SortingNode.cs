@@ -1,20 +1,18 @@
 ﻿using UnityEngine;
-using UnityEditor;
 using System.Collections;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif 
 
 [ExecuteInEditMode]
 public class SortingNode : MonoBehaviour
 {
+#if UNITY_EDITOR
 	void Start()
 	{
-		if (Application.isPlaying) Component.Destroy(this);
-		else foreach (Transform tf in transform)
-		{
-			Resort(tf);
-		}
+		foreach (Transform tf in transform) Resort(tf);
 	}
 
-	// Update is called once per frame
 	void Update ()
 	{
 		if (Selection.activeGameObject == null) return;
@@ -33,4 +31,11 @@ public class SortingNode : MonoBehaviour
 		pos.z = pos.y;
 		tf.position = pos;
 	}
+
+#else 
+	void Start()
+	{
+		Component.Destroy(this);
+	}
+#endif 
 }
