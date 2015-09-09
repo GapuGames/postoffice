@@ -7,7 +7,20 @@ using System.Collections;
 
 public class ControlPad : MonoBehaviour
 {
+	
+	public void SetControlCallback(UnityAction<Vector2, float> movingCallback, UnityAction actionDown, UnityAction actionUp)
+	{
+		m_padMove.AddListener(movingCallback);
+		m_actionDown.AddListener(actionUp);
+		m_actionUp.AddListener(actionUp);
+	}
 
+	//! private members, callback methods or anythings you don't need to worry about
+	#region
+	[Serializable] public class PadMove    : UnityEvent<Vector2, float> {};
+	[Serializable] public class ActionUp   : UnityEvent {};
+	[Serializable] public class ActionDown : UnityEvent {};
+	
 	[SerializeField] private Transform   m_ball        = null;
 	[SerializeField] private float       m_maxDistance = 25.0f;
 	[SerializeField] private PadMove     m_padMove     = new PadMove();
@@ -23,13 +36,6 @@ public class ControlPad : MonoBehaviour
 	public void OnActionUp()
 	{
 		m_actionUp.Invoke();
-	}
-
-	public void SetControlCallback(UnityAction<Vector2, float> movingCallback, UnityAction actionDown, UnityAction actionUp)
-	{
-		m_padMove.AddListener(movingCallback);
-		m_actionDown.AddListener(actionUp);
-		m_actionUp.AddListener(actionUp);
 	}
 	
 	public void OnDrag(BaseEventData bed)
@@ -58,8 +64,5 @@ public class ControlPad : MonoBehaviour
 	{
 		m_originPosition = m_ball.position;
 	}
-	
-	[Serializable] public class PadMove    : UnityEvent<Vector2, float> {};
-	[Serializable] public class ActionUp   : UnityEvent {};
-	[Serializable] public class ActionDown : UnityEvent {};
+	#endregion
 }
