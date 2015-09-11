@@ -25,6 +25,8 @@ public class Character : MonoBehaviour
 		m_body.gravityScale   = 0.0f;
 		m_body.freezeRotation = true;
 		modelInstance.transform.SetParent(transform, false);
+
+		Debug.Log(info.facePath);
 	}
 
 	public void MoveBy(Vector2 direction, float power)
