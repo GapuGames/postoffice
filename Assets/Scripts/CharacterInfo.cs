@@ -7,42 +7,48 @@ using System.Collections;
 public class CharacterInfo : ScriptableObject
 {
 	public string     characterName;
-	public GameObject modelPrefab;
 	public float      moveSpeed;
-	public string     facePath;
-	public string     hairPath;
-	public string     eyesPath;
-	public string     clothPath;
-	public string     weaponPath;
+	public GameObject modelPrefab;
+	[HideInInspector] public string facePath;
+	[HideInInspector] public string hairPath;
+	[HideInInspector] public string eyesPath;
+	[HideInInspector] public string clothPath;
+	[HideInInspector] public string weaponPath;
 }
 
 [CustomEditor(typeof(CharacterInfo))]
 public class CharacterInfoEditor : Editor
 {
+	private Vector2 scrolPos1 = Vector2.zero;
+	private Vector2 scrolPos2 = Vector2.zero;
 	public override void OnInspectorGUI()
 	{
-		base.OnInspectorGUI();
+		ProcessModel();
+	}
+
+	private void ProcessModel()
+	{
 		ProcessData();
 		ProcessDisplay();
 	}
 
-	private void OnEnable()
-	{
-		Debug.Log("OnEnable");
-	}
-
 	private void ProcessData()
 	{
+		serializedObject.Update();
+
 		CharacterInfo info  = target as CharacterInfo;
 		info.facePath   = FindPathByTag("Face");
 		info.hairPath   = FindPathByTag("Hair");
 		info.eyesPath   = FindPathByTag("Eyes");
 		info.clothPath  = FindPathByTag("Cloth");
 		info.weaponPath = FindPathByTag("Weapon");
+
+		serializedObject.ApplyModifiedProperties();
 	}
 
 	private void ProcessDisplay()
 	{
+		base.OnInspectorGUI();
 		EditorGUILayout.Separator();
 		
 		//! check model validation
@@ -86,14 +92,14 @@ public class CharacterInfoEditor : Editor
 		}
 		
 		//! display information of model
-		EditorGUILayout.BeginScrollView(Vector2.zero);
+		scrolPos1 = EditorGUILayout.BeginScrollView(scrolPos1, GUILayout.ExpandHeight(false));
 		EditorGUILayout.PrefixLabel("애니메이션");
-		EditorGUILayout.TextArea(stateSB.ToString());
+		EditorGUILayout.TextArea(stateSB.ToString(), GUILayout.ExpandHeight(false));
 		EditorGUILayout.EndScrollView();
 		
-		EditorGUILayout.BeginScrollView(Vector2.zero);
+		scrolPos2 = EditorGUILayout.BeginScrollView(scrolPos2, GUILayout.ExpandHeight(false));
 		EditorGUILayout.PrefixLabel("부위 정보");
-		EditorGUILayout.TextArea(partSB.ToString());
+		EditorGUILayout.TextArea(partSB.ToString(), GUILayout.ExpandHeight(false));
 		EditorGUILayout.EndScrollView();
 	}
 	
