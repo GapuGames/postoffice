@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEditor;
 using UnityEditor.Animations;
+using System;
 using System.Text;
 using System.Collections;
 
@@ -9,13 +10,14 @@ public class CharacterInfo : ScriptableObject
 	public string     characterName;
 	public float      moveSpeed;
 	public GameObject modelPrefab;
+	//public int        characteristic;
 	[HideInInspector] public string facePath;
 	[HideInInspector] public string hairPath;
 	[HideInInspector] public string eyesPath;
 	[HideInInspector] public string clothPath;
 	[HideInInspector] public string weaponPath;
 }
-
+          
 [CustomEditor(typeof(CharacterInfo))]
 public class CharacterInfoEditor : Editor
 {
@@ -49,13 +51,18 @@ public class CharacterInfoEditor : Editor
 	private void ProcessDisplay()
 	{
 		base.OnInspectorGUI();
+
+		//! display infomations;
 		EditorGUILayout.Separator();
-		
+
+		//! selection of characteristic (not implemented yet)
+		EditorGUILayout.LabelField("성격 선택:", "미구현(있으면 좋겠어?)");
+
 		//! check model validation
 		CharacterInfo      info  = target as CharacterInfo;
-		GameObject         model = (info != null)? info.modelPrefab : null;
+		GameObject         model = (info != null)?  info.modelPrefab : null;
 		Animator           anim  = (model != null)? model.GetComponent<Animator>() : null;
-		AnimatorController ac    = (anim != null)? (anim.runtimeAnimatorController as AnimatorController) : null;
+		AnimatorController ac    = (anim != null)?  (anim.runtimeAnimatorController as AnimatorController) : null;
 		{
 			string message = "알수 없는 이유";
 			if (model == null)     message = ("프리팹이 없어");
@@ -83,7 +90,7 @@ public class CharacterInfoEditor : Editor
 		
 		//! extract part information
 		{
-			System.Func<string, string> msgFilter = (msg) => { return string.IsNullOrEmpty(msg)? "부위가 없어" : msg; };
+			System.Func<string, string> msgFilter = (msg) => { return string.IsNullOrEmpty(msg)? "부위가 없어(태그를 설정해)" : msg; };
 			partSB.AppendFormat("얼굴\t: ").AppendLine(msgFilter(info.facePath));
 			partSB.AppendFormat("눈\t: ").AppendLine(msgFilter(info.eyesPath));
 			partSB.AppendFormat("헤어\t: ").AppendLine(msgFilter(info.hairPath));
