@@ -28,16 +28,22 @@ public class SpriteToImage : MonoBehaviour
 }
 
 [CustomEditor(typeof(SpriteToImage))]
+[CanEditMultipleObjects]
 public class SpriteToImageEditor : Editor
 {
 	public override void OnInspectorGUI ()
 	{
-		if (!GUILayout.Button("Start convert")) return;
+		if (GUILayout.Button("Convert character"))
+		{
+			SpriteToImage sti = target as SpriteToImage;
+			ConvertCharacter(sti);
+		}
 
-		SpriteToImage sti = target as SpriteToImage;
+	}
+
+	private void ConvertCharacter(SpriteToImage sti)
+	{
 		GameObject    go  = sti.gameObject;
-
-
 		SpriteRenderer[] renderers = go.GetComponentsInChildren<SpriteRenderer>();
 		foreach (SpriteRenderer i in renderers)
 		{
@@ -76,6 +82,5 @@ public class SpriteToImageEditor : Editor
 		childrenArranger(go.transform);
 
 		go.AddComponent<Canvas>();
-
 	}
 }
