@@ -15,6 +15,12 @@ public class GapuEditor : EditorWindow
 	private static string filePath = Application.dataPath+"/Utilities/Data/Snapshot";
 	private void OnGUI()
 	{
+		if (GUILayout.Button("Test"))
+		{
+			SpriteRenderer r = Selection.activeGameObject.GetComponent<SpriteRenderer>();
+			Debug.Log(r.bounds.ToString());
+		}
+
 		if (GUILayout.Button("Save position"))
 		{
 			StringBuilder snapShot = new StringBuilder();
@@ -66,7 +72,6 @@ public class GapuEditor : EditorWindow
 			
 			Component.DestroyImmediate(renderer, true);
 		}
-
 		return;
 		if (go.transform.childCount == 1)
 		{
