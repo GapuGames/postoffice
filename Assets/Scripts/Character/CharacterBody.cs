@@ -28,6 +28,10 @@ public class CharacterBody : MonoBehaviour
 
 		if (power > 0.0f) m_model.flip = direction.x < 0.0f;
 		m_anim.SetBool("moving", (power > 0.0f));
+
+		Vector3 pos = m_anim.transform.localPosition;
+		pos.z = pos.y;
+		m_anim.transform.localPosition = pos;
 	}
 
 	public void Clear()

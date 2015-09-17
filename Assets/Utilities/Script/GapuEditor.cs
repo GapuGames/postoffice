@@ -13,23 +13,67 @@ public class GapuEditor : EditorWindow
 		EditorWindow.GetWindow<GapuEditor>();
 	}
 
+	string m_path = Application.dataPath + "/Utilities/Data/Snapshot";
 	IEnumerator m_step = null;
+	string m_layoutName = "";
+
 	private void OnGUI()
 	{
-		if (GUILayout.Button("Test"))
-		{
-			SpriteRenderer r = Selection.activeGameObject.GetComponent<SpriteRenderer>();
-			Debug.Log(r.bounds.ToString());
-		}
-
-
 		if (GUILayout.Button("Convert scene step1"))
 		{
 			if (m_step == null) m_step = ConvertScene();
 			if (!m_step.MoveNext()) m_step = null;
 		}
-
 		if (m_step != null) GUILayout.Label(m_step.Current as string);
+
+		if (GUILayout.Button("Store positions"))
+		{
+			GameObject[]  goList = GameObject.FindObjectsOfType<GameObject>();
+			StringBuilder sb     = new StringBuilder();
+			foreach (GameObject go in goList) sb.AppendLine(go.transform.localPosition.ToString());
+
+			System.IO.File.WriteAllText(m_path, sb.ToString());
+		}
+
+		if (GUILayout.Button("Restore positions"))
+		{
+			GameObject[]  goList = GameObject.FindObjectsOfType<GameObject>();
+			string[] posList = System.IO.File.ReadAllLines(m_path);
+			for (int i = 0 ; i < goList.Length ; ++i)
+			{
+				goList[i].transform.localPosition = Util.ParseVector3(posList[i]);
+			}
+		}
+
+		GUILayout.BeginHorizontal();
+		m_layoutName = GUILayout.TextField(m_layoutName, GUILayout.MinWidth(100));
+		if (GUILayout.Button("Set canvas layout"))
+		{
+			System.Action<GameObject> converter = (go) => 
+			{
+				Canvas[] canvasList = go.GetComponentsInChildren<Canvas>();
+				foreach (Canvas canvas in canvasList) canvas.sortingLayerName = m_layoutName;
+			};
+
+			foreach (GameObject go in Selection.gameObjects) converter(go);
+		}
+		GUILayout.EndHorizontal();
+
+		if (GUILayout.Button("Assign y->z in canvas"))
+		{
+			System.Action<GameObject> func = (go) => 
+			{
+				Canvas[] canvasList = go.GetComponentsInChildren<Canvas>();
+				foreach (Canvas canvas in canvasList)
+				{
+					Vector3 pos = canvas.transform.localPosition;
+					pos.z = pos.y;
+					canvas.transform.localPosition = pos;;
+				}
+			};
+			
+			foreach (GameObject go in Selection.gameObjects) func(go);
+		}
 	}
 
 	private IEnumerator ConvertScene()
