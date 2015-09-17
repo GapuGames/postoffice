@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEditor;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 public class GapuEditor : EditorWindow
 {
@@ -12,7 +13,7 @@ public class GapuEditor : EditorWindow
 		EditorWindow.GetWindow<GapuEditor>();
 	}
 
-	private static string filePath = Application.dataPath+"/Utilities/Data/Snapshot";
+	IEnumerator m_step = null;
 	private void OnGUI()
 	{
 		if (GUILayout.Button("Test"))
@@ -21,45 +22,52 @@ public class GapuEditor : EditorWindow
 			Debug.Log(r.bounds.ToString());
 		}
 
-		if (GUILayout.Button("Save position"))
+
+		if (GUILayout.Button("Convert scene step1"))
 		{
-			StringBuilder snapShot = new StringBuilder();
-			Transform[] allTF = Object.FindObjectsOfType<Transform>();
-			foreach (Transform tf in allTF)
-			{
-				snapShot.AppendFormat("{0}:{1}\n", tf.GetPath(), tf.localPosition);
-			}
-			System.IO.File.WriteAllText(filePath, snapShot.ToString());
+			if (m_step == null) m_step = ConvertScene();
+			if (!m_step.MoveNext()) m_step = null;
 		}
 
-		if (GUILayout.Button("Load position"))
-		{
-			string[] lines = System.IO.File.ReadAllLines(filePath);
-			foreach (string line in lines)
-			{
-				string[] splited = line.Split(':');
-				GameObject go = GameObject.Find(splited[0]);
-				if (go == null)
-				{
-					Debug.Log(string.Format("there is no '{0}'", splited[0]));
-					continue;
-				}
-				go.transform.localPosition = Util.ParseVector3(splited[1]);
-			}
-		}
-
-		if (GUILayout.Button("Convert Prop"))
-		{
-			foreach (GameObject go in Selection.gameObjects)
-			{
-				ConvertProperty(go);
-			}
-		}
+		if (m_step != null) GUILayout.Label(m_step.Current as string);
 	}
 
-	private void ConvertProperty(GameObject go)
+	private IEnumerator ConvertScene()
+	{
+		yield return "ready for converting";
+
+		GameObject[] goList   = GameObject.FindObjectsOfType<GameObject>();
+		GameObject[] propList = Resources.LoadAll<GameObject>("Prefab/Prop");
+		Vector3[]    posList  = new Vector3[goList.Length];
+		
+		//! save positions
+		for (int i = 0 ; i < goList.Length ; ++i)
+		{
+			posList[i] = goList[i].transform.localPosition;
+		}
+
+		//! convert props
+		foreach (GameObject obj in propList) ConvertProps( obj );
+
+		yield return "step1 done, push again please";
+
+		//! load positions
+		for (int i = 0 ; i < goList.Length ; ++i)
+		{
+			goList[i].transform.localPosition = posList[i];
+		}
+		
+		yield return "step2 done, push again for last";
+
+		//! restruct props
+		foreach (GameObject obj in propList) RestructProps( obj );
+	}
+
+	private void ConvertProps(GameObject go)
 	{
 		go.gameObject.AddComponent<RectTransform>();
+		Canvas canvas = go.AddComponent<Canvas>();
+		canvas.overrideSorting = true;
 		foreach (Transform i in go.transform)
 		{
 			RectTransform  rtf      = i.gameObject.AddComponent<RectTransform>();
@@ -68,11 +76,13 @@ public class GapuEditor : EditorWindow
 			
 			image.sprite         = renderer.sprite;
 			image.preserveAspect = true;
-			rtf.sizeDelta        = Vector2.one;
-			
+
 			Component.DestroyImmediate(renderer, true);
 		}
-		return;
+	}
+	
+	private void RestructProps(GameObject go)
+	{
 		if (go.transform.childCount == 1)
 		{
 			Image          parentImg = go.gameObject.AddComponent<Image>();
@@ -81,7 +91,8 @@ public class GapuEditor : EditorWindow
 			
 			parentImg.sprite         = childImg.sprite;
 			parentImg.preserveAspect = true;
-			rtf.sizeDelta            = Vector2.one;
+			parentImg.SetNativeSize();
+			rtf.sizeDelta = rtf.sizeDelta/parentImg.sprite.pixelsPerUnit;
 			
 			GameObject.DestroyImmediate(childImg.gameObject, true);
 		}
