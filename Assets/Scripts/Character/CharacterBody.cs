@@ -3,6 +3,12 @@ using System.Collections;
 
 public class CharacterBody : MonoBehaviour
 {
+	public Transform m_face   = null;
+	public Transform m_eyes   = null;
+	public Transform m_hair   = null;
+	public Transform m_cloth  = null;
+	public Transform m_weapon = null;
+
 	public void LoadBody(CharacterInfo info)
 	{
 		Clear();
@@ -15,6 +21,12 @@ public class CharacterBody : MonoBehaviour
 		m_brain  = m_anim.gameObject.AddComponent<DummyBrain>();
 		m_model  = m_anim.GetComponentInChildren<Puppet2D_GlobalControl>();
 		
+		m_face   = m_anim.transform.Find(info.facePath);
+		m_eyes   = m_anim.transform.Find(info.eyesPath);
+		m_hair   = m_anim.transform.Find(info.hairPath);
+		m_cloth  = m_anim.transform.Find(info.clothPath);
+		m_weapon = m_anim.transform.Find(info.weaponPath);
+
 		m_rigid.gravityScale   = 0.0f;
 		m_rigid.freezeRotation = true;
 		m_rigid.transform.SetParent(transform, false);

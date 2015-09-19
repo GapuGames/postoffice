@@ -112,23 +112,25 @@ public class CharacterInfoEditor : Editor
 	
 	private string FindPathByTag(string tagName)
 	{
-		StringBuilder pathToPart = new StringBuilder();
+		Transform part = null;
 		System.Func<Transform, bool> tagFinder = null;
 		tagFinder = (tf) =>
 		{
-			bool ret = false;
-			if ((tf.tag == tagName)) ret = true;
-			else foreach (Transform i in tf) if (ret = tagFinder(i)) break;
-			
-			if (ret) pathToPart.Insert(0, string.Format("/{0}", tf.name));
-			
-			return ret;
+			if ((tf.tag == tagName) && part == null) part = tf;
+			else if (part == null)
+			{
+				foreach (Transform i in tf) if (tagFinder(i)) break;
+			}
+
+			return (part != null);
 		};
 		
-		CharacterInfo info   = target as CharacterInfo;
-		GameObject     model = (info != null)? info.modelPrefab : null;
+		CharacterInfo info  = target as CharacterInfo;
+		GameObject    model = (info != null)? info.modelPrefab : null;
 		if (model != null) foreach (Transform tf in model.transform) if (tagFinder(tf)) break;
-		
-		return pathToPart.ToString();
+
+		string path = (part != null)? part.GetPath() : string.Empty;
+		if (!string.IsNullOrEmpty(path)) path = path.Remove(0, model.name.Length+1);
+		return path;
 	}
 }
