@@ -28,10 +28,21 @@ public class CharacterBody : MonoBehaviour
 
 		if (power > 0.0f) m_model.flip = direction.x < 0.0f;
 		m_anim.SetBool("moving", (power > 0.0f));
+		m_anim.SetFloat("speed", power);
+	}
 
-		Vector3 pos = m_anim.transform.localPosition;
-		pos.z = pos.y;
-		m_anim.transform.localPosition = pos;
+	public void StartAttack()
+	{
+		m_anim.SetBool("attacking", true);
+
+		AnimatorStateInfo state = m_anim.GetCurrentAnimatorStateInfo(0);;
+		Debug.Log(state.length);
+		InvokeRepeating("SetAttackType", 0, state.length);
+	}
+
+	public void StopAttack()
+	{
+		m_anim.SetBool("attacking", false);
 	}
 
 	public void Clear()
@@ -43,7 +54,7 @@ public class CharacterBody : MonoBehaviour
 		m_rigid = null;
 		m_model = null;
 	}
-
+	
 	//! private members, callbacks or anythings that you don't need to worry about
 	#region
 	private CharacterInfo  m_info  = null;
@@ -51,6 +62,21 @@ public class CharacterBody : MonoBehaviour
 	private Rigidbody2D    m_rigid = null;
 	private Animator       m_anim  = null;
 	private Puppet2D_GlobalControl m_model = null;
+
+	private void SetAttackType()
+	{
+		m_anim.SetInteger("attackType", Random.Range (1, 3));
+	}
+
+	private void FixedUpdate()
+	{
+		if (m_anim != null)
+		{
+			Vector3 pos = m_anim.transform.localPosition;
+			pos.z = pos.y;
+			m_anim.transform.localPosition = pos;
+		}
+	}
 	#endregion
 
 }
