@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 public class GapuEditor : EditorWindow
 {
-	[MenuItem("Window/Gapu _h")]
+	[MenuItem("Window/Gapu")]
 	public static void ShowWindow()
 	{
 		EditorWindow.GetWindow<GapuEditor>();
