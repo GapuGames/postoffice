@@ -9,11 +9,6 @@ public class Character : MonoBehaviour
 	{
 		if (info == null) return;
 		m_body.LoadBody(info);
-		if (m_weaponPart != null && m_body.m_weapon != null)
-		{
-			GameObject inst = GameObject.Instantiate(m_weaponPart) as GameObject;
-			inst.transform.SetParent(m_body.m_weapon, false);
-		}
 	}
 
 	public void Reload()
