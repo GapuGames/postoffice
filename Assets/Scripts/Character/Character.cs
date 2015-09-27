@@ -3,42 +3,79 @@ using System.Collections;
 
 public class Character : MonoBehaviour
 {
-	public GameObject m_weaponPart = null;
-	//! public, protected or everything can be used outside of this
-	public void LoadCharacter(CharacterInfo info)
+	public void SetInfo(CharacterInfo info)
 	{
-		if (info == null) return;
-		m_body.LoadBody(info);
+		m_info = info;
 	}
 
-	public void Reload()
+	public void MoveBy(Vector2 direction, float power)
 	{
-		LoadCharacter(m_info);
+		if (m_info == null) return;
+
+		m_rigid.velocity = direction * power * m_info.moveSpeed;
+
+		if (power > 0.0f) m_model.flip = direction.x < 0.0f;
+		m_anim.SetBool("moving", (power > 0.0f));
+		m_anim.SetFloat("speed", power);
+	}
+
+	public void ApplyDamage(int amount)
+	{
+		if (amount <= 0) return;
+		m_anim.SetInteger("damage", amount);
+
+	}
+
+	public void StartAttack()
+	{
+		m_anim.SetBool("attacking", true);
+
+		AnimatorStateInfo state = m_anim.GetCurrentAnimatorStateInfo(0);;
+		Debug.Log(state.length);
+		InvokeRepeating("SetAttackType", 0, state.length);
+	}
+
+	public void StopAttack()
+	{
+		m_anim.SetBool("attacking", false);
 	}
 	
-	//! private, callback or anything don’t be considered to be used outside of this
+	//! private members, callbacks or anythings that you don't need to worry about
 	#region
-
 	[SerializeField]
-	CharacterInfo  m_info = null;
-	CharacterBody  m_body = null;
+	private CharacterInfo  m_info  = null;
+	private CharacterBrain m_brain = null;
+	private Rigidbody2D    m_rigid = null;
+	private Animator       m_anim  = null;
+	private Puppet2D_GlobalControl m_model = null;
+
+	private int m_hp = 0;
+
+	private void SetAttackType()
+	{
+		m_anim.SetInteger("attackType", Random.Range (1, 3));
+	}
 
 	private void Awake()
 	{
-		m_body = gameObject.GetComponent<CharacterBody>();
-		if (m_body == null) m_body = gameObject.AddComponent<CharacterBody>();
+		m_anim   = GetComponent<Animator>();
+		m_rigid  = gameObject.AddComponent<Rigidbody2D>();
+		m_brain  = gameObject.AddComponent<DummyBrain>();
+		m_model  = m_anim.GetComponentInChildren<Puppet2D_GlobalControl>();
+		
+		m_rigid.gravityScale   = 0.0f;
+		m_rigid.freezeRotation = true;
 	}
 
-	private void Start ()
+	private void FixedUpdate()
 	{
-		LoadCharacter(m_info);
-		SetSpriteLayer("MiddleGround");
-	}
-
-	public void SetSpriteLayer(string layerName)
-	{
-		SpriteRenderer[] renderers = GetComponentsInChildren<SpriteRenderer>();
-		foreach (SpriteRenderer i in renderers) i.sortingLayerName = layerName;
+		if (m_anim != null)
+		{
+			Vector3 pos = m_anim.transform.localPosition;
+			pos.z = pos.y;
+			m_anim.transform.localPosition = pos;
+		}
 	}
 	#endregion
+
 }

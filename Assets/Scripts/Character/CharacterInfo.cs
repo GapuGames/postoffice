@@ -16,6 +16,14 @@ public class CharacterInfo : ScriptableObject
 	[HideInInspector] public string eyesPath;
 	[HideInInspector] public string clothPath;
 	[HideInInspector] public string weaponPath;
+
+	public Character Create()
+	{
+		GameObject model = GameObject.Instantiate(modelPrefab) as GameObject;
+		Character chr = model.AddComponent<Character>();
+		chr.SetInfo(this);
+		return chr;
+	}
 }
           
 [CustomEditor(typeof(CharacterInfo))]
