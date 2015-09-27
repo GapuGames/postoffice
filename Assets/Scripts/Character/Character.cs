@@ -25,8 +25,16 @@ public class Character : MonoBehaviour
 	public void ApplyDamage(int amount)
 	{
 		if (amount <= 0) return;
-		m_anim.SetTrigger("damaged");
+
 		MoveBy(Vector2.zero, 0);
+
+		if (m_hp > 0 && (m_hp - amount) <= 0)
+		{
+			m_anim.SetBool("dead", true);
+			if (m_brain != null) m_brain.Dead();
+		}
+		else m_anim.SetTrigger("damaged");
+
 		if ((m_hp -= amount) < 0) m_hp = 0;
 	}
 
@@ -54,7 +62,7 @@ public class Character : MonoBehaviour
 	private ActiveSkill    m_skill = null;
 	private Puppet2D_GlobalControl m_model = null;
 
-	private int m_hp = 0;
+	private int m_hp = 2;
 
 	private void SetAttackType()
 	{

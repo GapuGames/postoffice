@@ -18,8 +18,19 @@ public class CharacterInfo : ScriptableObject
 
 	public Character Create()
 	{
-		GameObject model = GameObject.Instantiate(modelPrefab) as GameObject;
-		Character chr = model.AddComponent<Character>();
+		GameObject    shadowPrefab = Resources.Load<GameObject>("Prefab/Unclassfied/Shadow");
+		GameObject    model  = GameObject.Instantiate(modelPrefab) as GameObject;
+		Character     chr    = model.AddComponent<Character>();
+		BoxCollider2D box    = model.GetComponent<BoxCollider2D>();
+		GameObject    shadow = GameObject.Instantiate(shadowPrefab) as GameObject;
+		{
+			Canvas        canvas    = shadow.GetComponent<Canvas>();
+			RectTransform transform = shadow.GetComponent<RectTransform>();
+			transform.SetParent(model.transform, false);
+			transform.sizeDelta = box.size;
+			canvas.overrideSorting = true;
+		}
+
 		chr.SetInfo(this);
 		return chr;
 	}

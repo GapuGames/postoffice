@@ -10,12 +10,18 @@ public class DummyBrain : CharacterBrain
 		Idle,
 		Runaway,
 		Runaround,
+		Dead,
 	}
 
 	public override void Born()
 	{
 		Debug.Log("더미 태어 났쪄여!");
 		ForceState(State.Idle);
+	}
+
+	public override void Dead ()
+	{
+		ForceState(State.Dead);
 	}
 
 	public override void CharacterEnter (Character target)
@@ -41,6 +47,7 @@ public class DummyBrain : CharacterBrain
 
 	private void ForceState(State newState)
 	{
+		if (m_state == State.Dead) return;
 		m_state = newState;
 		if (m_stateRoutine != null) StopCoroutine(m_stateRoutine);
 		m_stateRoutine = StartCoroutine(StateRoutine());
@@ -48,7 +55,7 @@ public class DummyBrain : CharacterBrain
 
 	private IEnumerator StateRoutine()
 	{
-		while (true)
+		while (m_state != State.Dead)
 		{
 			yield return null;
 			switch (m_state)
