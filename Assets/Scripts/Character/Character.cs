@@ -3,6 +3,9 @@ using System.Collections;
 
 public class Character : MonoBehaviour
 {
+	public int  HP   { get { return m_hp; } }
+	public bool Flip { get { return (m_model != null)? m_model.flip : false; } }
+
 	public void SetInfo(CharacterInfo info)
 	{
 		m_info = info;
@@ -22,8 +25,8 @@ public class Character : MonoBehaviour
 	public void ApplyDamage(int amount)
 	{
 		if (amount <= 0) return;
-		m_anim.SetInteger("damage", amount);
-
+		m_anim.SetTrigger("damaged");
+		if ((m_hp -= amount) < 0) m_hp = 0;
 	}
 
 	public void StartAttack()
@@ -47,6 +50,7 @@ public class Character : MonoBehaviour
 	private CharacterBrain m_brain = null;
 	private Rigidbody2D    m_rigid = null;
 	private Animator       m_anim  = null;
+	private ActiveSkill    m_skill = null;
 	private Puppet2D_GlobalControl m_model = null;
 
 	private int m_hp = 0;
@@ -56,15 +60,25 @@ public class Character : MonoBehaviour
 		m_anim.SetInteger("attackType", Random.Range (1, 3));
 	}
 
+	private void CastSkill()
+	{
+		if (m_skill != null) m_skill.Activate(this);
+	}
+
 	private void Awake()
 	{
 		m_anim   = GetComponent<Animator>();
 		m_rigid  = gameObject.AddComponent<Rigidbody2D>();
 		m_brain  = gameObject.AddComponent<DummyBrain>();
 		m_model  = m_anim.GetComponentInChildren<Puppet2D_GlobalControl>();
-		
+
 		m_rigid.gravityScale   = 0.0f;
 		m_rigid.freezeRotation = true;
+
+		if (m_info.activeSkill != null)
+		{
+			m_skill = (GameObject.Instantiate(m_info.activeSkill.gameObject) as GameObject).GetComponent<ActiveSkill>();
+		}
 	}
 
 	private void FixedUpdate()

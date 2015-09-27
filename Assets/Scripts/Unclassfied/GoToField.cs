@@ -3,8 +3,9 @@ using System.Collections;
 
 public class GoToField : MonoBehaviour
 {
-	private void OnTriggerEnter2D(Collider2D other)
+	public void ChangeScene()
 	{
+		Debug.Log("ChangeScene");
 		Application.LoadLevel("Loading");
 	}
 }
