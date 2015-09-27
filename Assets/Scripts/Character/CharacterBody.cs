@@ -31,6 +31,13 @@ public class CharacterBody : MonoBehaviour
 		m_anim.SetFloat("speed", power);
 	}
 
+	public void ApplyDamage(int amount)
+	{
+		if (amount <= 0) return;
+		m_anim.SetInteger("damage", amount);
+
+	}
+
 	public void StartAttack()
 	{
 		m_anim.SetBool("attacking", true);
@@ -62,6 +69,8 @@ public class CharacterBody : MonoBehaviour
 	private Rigidbody2D    m_rigid = null;
 	private Animator       m_anim  = null;
 	private Puppet2D_GlobalControl m_model = null;
+
+	private int m_hp = 0;
 
 	private void SetAttackType()
 	{
