@@ -26,6 +26,7 @@ public class Character : MonoBehaviour
 	{
 		if (amount <= 0) return;
 		m_anim.SetTrigger("damaged");
+		MoveBy(Vector2.zero, 0);
 		if ((m_hp -= amount) < 0) m_hp = 0;
 	}
 
@@ -69,8 +70,11 @@ public class Character : MonoBehaviour
 	{
 		m_anim   = GetComponent<Animator>();
 		m_rigid  = gameObject.AddComponent<Rigidbody2D>();
-		m_brain  = gameObject.AddComponent<DummyBrain>();
 		m_model  = m_anim.GetComponentInChildren<Puppet2D_GlobalControl>();
+		if (tag != "Player")
+		{
+			(m_brain = gameObject.AddComponent<DummyBrain>()).character = this;;
+		}
 
 		m_rigid.gravityScale   = 0.0f;
 		m_rigid.freezeRotation = true;
@@ -79,6 +83,47 @@ public class Character : MonoBehaviour
 		{
 			m_skill = (GameObject.Instantiate(m_info.activeSkill.gameObject) as GameObject).GetComponent<ActiveSkill>();
 		}
+
+		CircleCollider2D circle = (new GameObject("Sight")).AddComponent<CircleCollider2D>();
+		circle.isTrigger = true;
+		circle.radius = 10;
+		circle.gameObject.layer = LayerMask.NameToLayer("Obstacle");
+		circle.transform.SetParent(transform, false);
+	}
+
+	private void Start()
+	{
+		if (m_brain != null) m_brain.Born();
+	}
+
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (m_brain == null) return;
+
+		Character target = other.GetComponent<Character>();
+		if (target == null) return;
+
+		m_brain.CharacterEnter(target);
+	}
+	
+	private void OnTriggerStay2D(Collider2D other)
+	{
+		if (m_brain == null) return;
+		
+		Character target = other.GetComponent<Character>();
+		if (target == null) return;
+		
+		m_brain.CharacterStay(target);
+	}
+	
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		if (m_brain == null) return;
+		
+		Character target = other.GetComponent<Character>();
+		if (target == null) return;
+		
+		m_brain.CharacterLeave(target);
 	}
 
 	private void FixedUpdate()
