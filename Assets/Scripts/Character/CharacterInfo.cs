@@ -9,6 +9,7 @@ public class CharacterInfo : ScriptableObject
 	public float       moveSpeed;
 	public GameObject  modelPrefab;
 	public ActiveSkill activeSkill;
+	public int         maxHP;
 	//public int        characteristic;
 	[HideInInspector] public string facePath;
 	[HideInInspector] public string hairPath;

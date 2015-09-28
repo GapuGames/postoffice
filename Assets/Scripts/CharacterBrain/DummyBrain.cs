@@ -15,7 +15,12 @@ public class DummyBrain : CharacterBrain
 
 	public override void Born()
 	{
-		Debug.Log("더미 태어 났쪄여!");
+		CircleCollider2D circle = (new GameObject("Sight")).AddComponent<CircleCollider2D>();
+		circle.isTrigger = true;
+		circle.radius = 10;
+		circle.gameObject.layer = LayerMask.NameToLayer("Obstacle");
+		circle.transform.SetParent(transform, false);
+
 		ForceState(State.Idle);
 	}
 
@@ -92,6 +97,24 @@ public class DummyBrain : CharacterBrain
 	private void StopRunning()
 	{
 		character.MoveBy(Vector2.zero, 0);
+	}
+	
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		Character target = other.GetComponent<Character>();
+		if (target != null) CharacterEnter(target);
+	}
+	
+	private void OnTriggerStay2D(Collider2D other)
+	{
+		Character target = other.GetComponent<Character>();
+		if (target != null) CharacterStay(target);
+	}
+	
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		Character target = other.GetComponent<Character>();
+		if (target != null) CharacterLeave(target);
 	}
 	#endregion
 }

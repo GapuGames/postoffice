@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class Character : MonoBehaviour
@@ -8,7 +9,8 @@ public class Character : MonoBehaviour
 
 	public void SetInfo(CharacterInfo info)
 	{
-		m_info = info;
+		if ((m_info = info) == null) return;
+		m_hp   = info.maxHP;
 	}
 
 	public void MoveBy(Vector2 direction, float power)
@@ -18,8 +20,8 @@ public class Character : MonoBehaviour
 		m_rigid.velocity = direction * power * m_info.moveSpeed;
 
 		if (power > 0.0f) m_model.flip = direction.x < 0.0f;
-		m_anim.SetBool("moving", (power > 0.0f));
-		m_anim.SetFloat("speed", power);
+		m_anim.SetBool(AnimParam.move, (power > 0.0f));
+		m_anim.SetFloat(AnimParam.speed, power);
 	}
 
 	public void ApplyDamage(int amount)
@@ -30,26 +32,23 @@ public class Character : MonoBehaviour
 
 		if (m_hp > 0 && (m_hp - amount) <= 0)
 		{
-			m_anim.SetBool("dead", true);
+			m_anim.SetBool(AnimParam.die, true);
 			if (m_brain != null) m_brain.Dead();
 		}
-		else m_anim.SetTrigger("damaged");
+		else m_anim.SetTrigger(AnimParam.damage);
 
 		if ((m_hp -= amount) < 0) m_hp = 0;
+		if (m_hpBar != null) m_hpBar.fillAmount = (float)m_hp/(float)m_info.maxHP;
 	}
 
 	public void StartAttack()
 	{
-		m_anim.SetBool("attacking", true);
-
-		AnimatorStateInfo state = m_anim.GetCurrentAnimatorStateInfo(0);;
-		Debug.Log(state.length);
-		InvokeRepeating("SetAttackType", 0, state.length);
+		m_anim.SetBool(AnimParam.attack, true);
 	}
 
 	public void StopAttack()
 	{
-		m_anim.SetBool("attacking", false);
+		m_anim.SetBool(AnimParam.attack, false);
 	}
 	
 	//! private members, callbacks or anythings that you don't need to worry about
@@ -60,13 +59,18 @@ public class Character : MonoBehaviour
 	private Rigidbody2D    m_rigid = null;
 	private Animator       m_anim  = null;
 	private ActiveSkill    m_skill = null;
+	private Image          m_hpBar = null;
 	private Puppet2D_GlobalControl m_model = null;
 
 	private int m_hp = 2;
 
-	private void SetAttackType()
+	public class AnimParam
 	{
-		m_anim.SetInteger("attackType", Random.Range (1, 3));
+		public static readonly int move   = Animator.StringToHash("move");
+		public static readonly int damage = Animator.StringToHash("damage");
+		public static readonly int die    = Animator.StringToHash("die");
+		public static readonly int speed  = Animator.StringToHash("speed");
+		public static readonly int attack = Animator.StringToHash("attack");
 	}
 
 	private void CastSkill()
@@ -76,13 +80,12 @@ public class Character : MonoBehaviour
 
 	private void Awake()
 	{
-		m_anim   = GetComponent<Animator>();
-		m_rigid  = gameObject.AddComponent<Rigidbody2D>();
-		m_model  = m_anim.GetComponentInChildren<Puppet2D_GlobalControl>();
-		if (tag != "Player")
-		{
-			(m_brain = gameObject.AddComponent<DummyBrain>()).character = this;;
-		}
+		m_anim  = GetComponent<Animator>();
+		m_rigid = gameObject.AddComponent<Rigidbody2D>();
+		m_model = m_anim.GetComponentInChildren<Puppet2D_GlobalControl>();
+		m_hpBar = transform.FindComponent<Image>("HP");
+
+		if (tag != "Player") (m_brain = gameObject.AddComponent<DummyBrain>()).character = this;
 
 		m_rigid.gravityScale   = 0.0f;
 		m_rigid.freezeRotation = true;
@@ -91,47 +94,11 @@ public class Character : MonoBehaviour
 		{
 			m_skill = (GameObject.Instantiate(m_info.activeSkill.gameObject) as GameObject).GetComponent<ActiveSkill>();
 		}
-
-		CircleCollider2D circle = (new GameObject("Sight")).AddComponent<CircleCollider2D>();
-		circle.isTrigger = true;
-		circle.radius = 10;
-		circle.gameObject.layer = LayerMask.NameToLayer("Obstacle");
-		circle.transform.SetParent(transform, false);
 	}
 
 	private void Start()
 	{
 		if (m_brain != null) m_brain.Born();
-	}
-
-	private void OnTriggerEnter2D(Collider2D other)
-	{
-		if (m_brain == null) return;
-
-		Character target = other.GetComponent<Character>();
-		if (target == null) return;
-
-		m_brain.CharacterEnter(target);
-	}
-	
-	private void OnTriggerStay2D(Collider2D other)
-	{
-		if (m_brain == null) return;
-		
-		Character target = other.GetComponent<Character>();
-		if (target == null) return;
-		
-		m_brain.CharacterStay(target);
-	}
-	
-	private void OnTriggerExit2D(Collider2D other)
-	{
-		if (m_brain == null) return;
-		
-		Character target = other.GetComponent<Character>();
-		if (target == null) return;
-		
-		m_brain.CharacterLeave(target);
 	}
 
 	private void FixedUpdate()
