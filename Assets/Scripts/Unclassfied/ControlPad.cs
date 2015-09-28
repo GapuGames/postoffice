@@ -57,5 +57,26 @@ public class ControlPad : MonoBehaviour
 	{
 		m_originPosition = m_ball.position;
 	}
+
+#if UNITY_EDITOR
+	private void FixedUpdate()
+	{
+		bool arrowKey = false;
+		Vector2 direction = Vector2.zero;
+		if (Input.GetKey(KeyCode.W)) {arrowKey |= true; direction += Vector2.up;}
+		if (Input.GetKey(KeyCode.S)) {arrowKey |= true; direction += Vector2.down;}
+		if (Input.GetKey(KeyCode.A)) {arrowKey |= true; direction += Vector2.left;}
+		if (Input.GetKey(KeyCode.D)) {arrowKey |= true; direction += Vector2.right;}
+
+		if (arrowKey) PadMove.Invoke(direction.normalized, arrowKey? 1:0);
+		if (Input.GetKeyUp(KeyCode.W)||Input.GetKeyUp(KeyCode.D)||Input.GetKeyUp(KeyCode.A)||Input.GetKeyUp(KeyCode.S))
+		{
+			PadMove.Invoke(Vector2.zero, 0);
+		}
+		if (Input.GetKeyDown(KeyCode.Space)) OnActionDown();
+		if (Input.GetKeyUp(KeyCode.Space))   OnActionUp();
+	}
+#endif
+
 	#endregion
 }

@@ -22,4 +22,9 @@ public static class Util
 		return name;
 	}
 
+	public static T FindComponent<T>(this Component com, string path) where T : class
+	{
+		Transform trans = com.transform.Find(path);
+		return (trans != null)? trans.GetComponent<T>() : null;
+	}
 }
