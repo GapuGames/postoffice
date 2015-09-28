@@ -27,6 +27,7 @@ public class DummyBrain : CharacterBrain
 	public override void Dead ()
 	{
 		ForceState(State.Dead);
+		GameObject.Destroy(gameObject, 3.0f);
 	}
 
 	public override void CharacterEnter (Character target)
