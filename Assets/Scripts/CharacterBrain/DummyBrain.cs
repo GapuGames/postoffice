@@ -34,7 +34,6 @@ public class DummyBrain : CharacterBrain
 	{
 		if (m_target == target)
 		{
-			m_target = null;
 			ForceState(State.Idle);
 		}
 	}
@@ -62,6 +61,7 @@ public class DummyBrain : CharacterBrain
 			{
 			case State.Idle:
 			{
+				m_target = null;
 				StopRunning();
 				yield return new WaitForSeconds(Random.Range(1.0f,3.0f));
 				m_state = State.Runaround;
@@ -69,7 +69,7 @@ public class DummyBrain : CharacterBrain
 				
 			case State.Runaround:
 			{
-				float angle = Random.value * Mathf.PI;
+				float angle = Random.value * Mathf.PI * 2.0f;
 				Vector3 direction = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle), 0);
 				character.MoveBy(direction, 1);
 				yield return new WaitForSeconds(Random.Range(1.0f,3.0f));
@@ -83,6 +83,7 @@ public class DummyBrain : CharacterBrain
 					Vector3 direction = (character.transform.position - m_target.transform.position).normalized;
 					character.MoveBy(direction, 1);
 				}
+				else m_state = State.Idle;
 			} break;
 			}
 		}
