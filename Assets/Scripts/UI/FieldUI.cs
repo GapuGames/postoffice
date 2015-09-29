@@ -13,7 +13,7 @@ public class FieldUI : MonoBehaviour
 	//! private, callback or anything don’t be considered to be used outside of this
 	#region
 
-	private int m_playTime = 5; //! in seconds
+	private int m_playTime = 30; //! in seconds
 
 	private void Start ()
 	{
@@ -25,24 +25,24 @@ public class FieldUI : MonoBehaviour
 	{
 		int count = GameObject.FindGameObjectsWithTag("Monster").Length;
 		m_monsterInfo.text = count.ToString();
+		if (count == 0) OpenResult();
 	}
 
 	private void UpdateTimeInfo ()
 	{
-		if (m_playTime > 0)
-		{
-			TimeSpan time = TimeSpan.FromSeconds(--m_playTime);
-			m_timeInfo.text = string.Format("{0}:{1}", time.Minutes, time.Seconds);
-		}
-		else
-		{
-			CancelInvoke();
-			GameObject result = GameObject.Instantiate(m_resultPrefab) as GameObject;
-			Text timeInfo    = result.transform.FindComponent<Text>("Panel/TimeInfo");
-			Text monsterInfo = result.transform.FindComponent<Text>("Panel/MonsterInfo");
-			timeInfo.text    = m_timeInfo.text;
-			monsterInfo.text = m_monsterInfo.text;
-		}
+		TimeSpan time = TimeSpan.FromSeconds(--m_playTime);
+		m_timeInfo.text = string.Format("{0}:{1}", time.Minutes, time.Seconds);
+		if (m_playTime <= 0) OpenResult();
+	}
+
+	private void OpenResult()
+	{
+		CancelInvoke();
+		GameObject result = GameObject.Instantiate(m_resultPrefab) as GameObject;
+		Text timeInfo    = result.transform.FindComponent<Text>("Panel/TimeInfo");
+		Text monsterInfo = result.transform.FindComponent<Text>("Panel/MonsterInfo");
+		timeInfo.text    = m_timeInfo.text;
+		monsterInfo.text = m_monsterInfo.text;
 	}
 	#endregion
 }
