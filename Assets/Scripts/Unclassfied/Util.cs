@@ -27,4 +27,9 @@ public static class Util
 		Transform ret = trans.Find(path);
 		return (ret != null)? ret.GetComponent<T>() : null;
 	}
+
+	public static void DestroyThis(this GameObject go)
+	{
+		GameObject.Destroy(go);
+	}
 }
