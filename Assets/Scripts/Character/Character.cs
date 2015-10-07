@@ -21,7 +21,6 @@ public class Character : MonoBehaviour
 
 		if (power > 0.0f) m_model.flip = direction.x < 0.0f;
 		m_anim.SetBool(AnimParam.move, (power > 0.0f));
-		m_anim.SetFloat(AnimParam.speed, power);
 	}
 
 	public void ApplyDamage(int amount)
@@ -69,7 +68,6 @@ public class Character : MonoBehaviour
 		public static readonly int move   = Animator.StringToHash("move");
 		public static readonly int damage = Animator.StringToHash("damage");
 		public static readonly int die    = Animator.StringToHash("die");
-		public static readonly int speed  = Animator.StringToHash("speed");
 		public static readonly int attack = Animator.StringToHash("attack");
 	}
 
