@@ -64,7 +64,7 @@ public class VillageUI : MonoBehaviour
 	
 	public void OpenFriendPopup()
 	{
-		cashShopPopup.Open();
+		friendPopup.Open();
 	}
 
 	public void OpenGoToFieldPopup()
